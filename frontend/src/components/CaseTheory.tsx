@@ -3,6 +3,7 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { StateCode, api } from "@/lib/api";
+import HelpHint from "./HelpHint";
 
 export default function CaseTheory({
   state,
@@ -46,7 +47,16 @@ export default function CaseTheory({
   return (
     <div className="card p-4 space-y-3">
       <div>
-        <h2 className="text-sm font-semibold">Case Theory Generator</h2>
+        <h2 className="text-sm font-semibold flex items-center">
+          Case Theory Generator
+          <HelpHint title="How Case Theory works">
+            Give a short, anonymized matter summary and (optionally) a county.
+            Grok returns the 3 strongest precedents from the active state's
+            Supreme/Appeals/Land Court that defeat a Motion to Dismiss,
+            with citations. If a case can't be verified, it returns
+            "UNVERIFIED" rather than guessing.
+          </HelpHint>
+        </h2>
         <p className="text-xs text-slate-400">
           “Give me the 3 strongest precedents I can use to defeat a Motion to
           Dismiss in this specific county.”

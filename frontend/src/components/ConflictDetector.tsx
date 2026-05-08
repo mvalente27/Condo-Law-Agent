@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ConflictFinding, DocumentSummary, StateCode, api } from "@/lib/api";
+import HelpHint from "./HelpHint";
 
 export default function ConflictDetector({
   state,
@@ -33,7 +34,16 @@ export default function ConflictDetector({
   return (
     <div className="card p-4 space-y-3">
       <div>
-        <h2 className="text-sm font-semibold">Conflict Detector</h2>
+        <h2 className="text-sm font-semibold flex items-center">
+          Conflict Detector
+          <HelpHint title="How Conflict Detector works">
+            Targets red-flag clauses (absolute discretion, fiduciary waivers,
+            super-lien deviations, supermajority amendment locks, restraints
+            on alienation) and asks Grok to reconcile them with the active
+            state's Condominium Act and modern case law. Returns a JSON
+            list of findings with severity. Run per document.
+          </HelpHint>
+        </h2>
         <p className="text-xs text-slate-400">
           Flags clauses that conflict with the active state's Condominium Act
           or modern New England case law (e.g., absolute-discretion language).

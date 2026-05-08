@@ -3,6 +3,7 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ChatMessage, Citation, StateCode, api } from "@/lib/api";
+import HelpHint from "./HelpHint";
 
 export default function ChatPanel({
   state,
@@ -38,7 +39,16 @@ export default function ChatPanel({
   return (
     <div className="card p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold">Counsel Chat</h2>
+        <h2 className="text-sm font-semibold flex items-center">
+          Counsel Chat
+          <HelpHint title="How Counsel Chat works">
+            Ask jurisdiction-specific questions. The active state and any
+            selected documents are passed to Grok with the V3 system prompt.
+            Document text is anonymized and only the most relevant excerpts
+            (TF-IDF top-k) are sent — citations show which pages were used.
+            Cmd/Ctrl+Enter to send.
+          </HelpHint>
+        </h2>
         <span className="text-xs text-slate-400">
           {state || "no state"} · {docIds.length} doc{docIds.length === 1 ? "" : "s"}
         </span>
