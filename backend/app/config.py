@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     xai_base_url: str = "https://api.x.ai/v1"
     # Override via env XAI_MODEL if xAI publishes a different id (e.g. "grok-4.3").
     xai_model: str = "grok-4-latest"
-    xai_zero_data_retention: bool = True
+    xai_zero_data_retention: bool = False
 
     # App
     cors_origins: str = "http://localhost:3000"
