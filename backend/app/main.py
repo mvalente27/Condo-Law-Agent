@@ -19,18 +19,15 @@ from .xai_client import XAIError, chat_completion
 
 app = FastAPI(title="Condo Law Agent API", version="0.1.0")
 
-
-@app.on_event("startup")
-def _configure_cors() -> None:
-    settings = get_settings()
-    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins or ["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+_settings = get_settings()
+_origins = [o.strip() for o in _settings.cors_origins.split(",") if o.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_origins or ["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 SUPPORTED_STATES = {"MA", "CT", "RI", "NH", "VT", "ME"}
