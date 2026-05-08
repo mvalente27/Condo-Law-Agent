@@ -51,7 +51,7 @@ export default function CaseTheory({
           Case Theory Generator
           <HelpHint title="How Case Theory works">
             Give a short, anonymized matter summary and (optionally) a county.
-            Grok returns the 3 strongest precedents from the active state's
+            Returns the 3 strongest precedents from the active state's
             Supreme/Appeals/Land Court that defeat a Motion to Dismiss,
             with citations. If a case can't be verified, it returns
             "UNVERIFIED" rather than guessing.
@@ -86,6 +86,10 @@ export default function CaseTheory({
       {out && (
         <div className="prose-legal max-w-none border-t border-border pt-3">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{out}</ReactMarkdown>
+          <p className="mt-2 text-[11px] italic text-amber-300/80 not-prose">
+            Verify every citation independently before relying on this output.
+            AI-generated; not legal advice.
+          </p>
         </div>
       )}
     </div>

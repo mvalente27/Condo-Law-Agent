@@ -33,8 +33,9 @@ export default function HowToUse({ onDismiss }: { onDismiss: () => void }) {
         <li className="rounded-md border border-border bg-ink/40 p-3">
           <div className="text-xs font-semibold text-accent">3 · Select what to use</div>
           <p className="mt-1 text-slate-300">
-            Tick documents in the left panel. Only ticked docs are searched
-            for relevant excerpts on each request.
+            Check the box next to each document in the left panel. Only
+            checked documents are searched for relevant excerpts on each
+            request.
           </p>
         </li>
         <li className="rounded-md border border-border bg-ink/40 p-3">

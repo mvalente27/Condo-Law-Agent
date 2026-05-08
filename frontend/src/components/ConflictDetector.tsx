@@ -39,7 +39,7 @@ export default function ConflictDetector({
           <HelpHint title="How Conflict Detector works">
             Targets red-flag clauses (absolute discretion, fiduciary waivers,
             super-lien deviations, supermajority amendment locks, restraints
-            on alienation) and asks Grok to reconcile them with the active
+            on alienation) and asks the AI engine to reconcile them with the active
             state's Condominium Act and modern case law. Returns a JSON
             list of findings with severity. Run per document.
           </HelpHint>

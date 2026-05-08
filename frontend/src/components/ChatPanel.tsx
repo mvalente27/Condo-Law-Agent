@@ -43,8 +43,8 @@ export default function ChatPanel({
           Counsel Chat
           <HelpHint title="How Counsel Chat works">
             Ask jurisdiction-specific questions. The active state and any
-            selected documents are passed to Grok with the V3 system prompt.
-            Document text is anonymized and only the most relevant excerpts
+            selected documents are sent to the AI engine with the firm's
+            system prompt. Document text is anonymized and only the most relevant excerpts
             (TF-IDF top-k) are sent — citations show which pages were used.
             Cmd/Ctrl+Enter to send.
           </HelpHint>
@@ -69,6 +69,12 @@ export default function ChatPanel({
             <div className="prose-legal max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
             </div>
+            {m.role === "assistant" && (
+              <p className="mt-2 text-[11px] italic text-amber-300/80">
+                Verify every citation independently before relying on this output.
+                AI-generated; not legal advice.
+              </p>
+            )}
           </div>
         ))}
         {busy && <p className="text-xs text-slate-400">Thinking…</p>}
