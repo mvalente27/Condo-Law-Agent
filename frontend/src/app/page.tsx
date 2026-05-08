@@ -8,29 +8,33 @@ import DocumentList from "@/components/DocumentList";
 import ChatPanel from "@/components/ChatPanel";
 import ConflictDetector from "@/components/ConflictDetector";
 import CaseTheory from "@/components/CaseTheory";
+import HowToUse from "@/components/HowToUse";
 
 type Tab = "chat" | "conflicts" | "theory";
+
+const HIDE_KEY = "cla.hideHowTo";
 
 export default function Page() {
   const [state, setState] = useState<StateCode | "">("MA");
   const [docs, setDocs] = useState<DocumentSummary[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [tab, setTab] = useState<Tab>("chat");
-  const [zdr, setZdr] = useState<boolean | null>(null);
-  const [model, setModel] = useState<string>("");
+  const [showHow, setShowHow] = useState(false);
 
   const refresh = async () => setDocs(await api.listDocs());
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setShowHow(window.localStorage.getItem(HIDE_KEY) !== "1");
+    }
     if (!api.backendConfigured()) return;
-    api.health()
-      .then((h) => {
-        setZdr(Boolean(h.zdr));
-        setModel(String(h.model ?? ""));
-      })
-      .catch(() => undefined);
     refresh().catch(() => undefined);
   }, []);
+
+  const dismissHow = () => {
+    if (typeof window !== "undefined") window.localStorage.setItem(HIDE_KEY, "1");
+    setShowHow(false);
+  };
 
   const toggleDoc = (id: string) =>
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
@@ -44,10 +48,15 @@ export default function Page() {
               Condo Law Agent <span className="text-slate-400 font-normal">— New England</span>
             </h1>
             <p className="text-xs text-slate-400">
-              {model || "model: unset"} · ZDR {zdr === null ? "?" : zdr ? "on" : "off"}
+              Jurisdiction-aware research assistant for MA, CT, RI, NH, VT, ME.
             </p>
           </div>
-          <StatePicker value={state} onChange={setState} states={STATES} />
+          <div className="flex items-center gap-3">
+            <button className="btn" onClick={() => setShowHow(true)}>
+              How to use
+            </button>
+            <StatePicker value={state} onChange={setState} states={STATES} />
+          </div>
         </div>
       </header>
 
@@ -59,6 +68,7 @@ export default function Page() {
             your FastAPI deployment.
           </div>
         )}
+        {showHow && <HowToUse onDismiss={dismissHow} />}
         <aside className="col-span-12 md:col-span-4 lg:col-span-3 space-y-6">
           <UploadPanel state={state} onUploaded={refresh} />
           <DocumentList
