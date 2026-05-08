@@ -11,15 +11,24 @@ export default function ConflictDetector({
   docs: DocumentSummary[];
 }) {
   const [results, setResults] = useState<Record<string, ConflictFinding[]>>({});
-  const [busy, setBusy] = useState<string | null>(null);
+  const [busy, setBusy] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
+
+  const isBusy = (id: string) => busy.has(id);
+  const setDocBusy = (id: string, on: boolean) =>
+    setBusy((prev) => {
+      const next = new Set(prev);
+      if (on) next.add(id);
+      else next.delete(id);
+      return next;
+    });
 
   const run = async (docId: string) => {
     if (!state) {
       setError("Select a jurisdiction first.");
       return;
     }
-    setBusy(docId);
+    setDocBusy(docId, true);
     setError(null);
     try {
       const r = await api.conflicts(state, docId);
@@ -27,8 +36,18 @@ export default function ConflictDetector({
     } catch (e) {
       setError(e instanceof Error ? e.message : "Scan failed");
     } finally {
-      setBusy(null);
+      setDocBusy(docId, false);
     }
+  };
+
+  const runAll = async () => {
+    if (!state) {
+      setError("Select a jurisdiction first.");
+      return;
+    }
+    if (docs.length === 0) return;
+    setError(null);
+    await Promise.all(docs.map((d) => run(d.doc_id)));
   };
 
   return (
@@ -41,7 +60,8 @@ export default function ConflictDetector({
             super-lien deviations, supermajority amendment locks, restraints
             on alienation) and asks the AI engine to reconcile them with the active
             state's Condominium Act and modern case law. Returns a JSON
-            list of findings with severity. Run per document.
+            list of findings with severity. Run on one document or scan all
+            selected at once.
           </HelpHint>
         </h2>
         <p className="text-xs text-slate-400">
@@ -53,6 +73,20 @@ export default function ConflictDetector({
       {docs.length === 0 && (
         <p className="text-xs text-slate-500">Select one or more documents on the left.</p>
       )}
+      {docs.length > 0 && (
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-slate-400">
+            {docs.length} document{docs.length === 1 ? "" : "s"} selected
+          </span>
+          <button
+            className="btn-primary"
+            disabled={busy.size > 0}
+            onClick={runAll}
+          >
+            {busy.size > 0 ? `Scanning ${busy.size}…` : "Scan all selected"}
+          </button>
+        </div>
+      )}
       <ul className="space-y-3">
         {docs.map((d) => (
           <li key={d.doc_id} className="rounded-md border border-border bg-ink/40 p-3">
@@ -60,10 +94,10 @@ export default function ConflictDetector({
               <div className="text-sm font-medium">{d.filename}</div>
               <button
                 className="btn"
-                disabled={busy === d.doc_id}
+                disabled={isBusy(d.doc_id)}
                 onClick={() => run(d.doc_id)}
               >
-                {busy === d.doc_id ? "Scanning…" : "Scan"}
+                {isBusy(d.doc_id) ? "Scanning…" : "Scan"}
               </button>
             </div>
             {results[d.doc_id] && (

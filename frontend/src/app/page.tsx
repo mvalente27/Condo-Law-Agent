@@ -92,18 +92,18 @@ export default function Page() {
             ))}
           </nav>
 
-          {tab === "chat" && (
+          <div className={tab === "chat" ? "" : "hidden"}>
             <ChatPanel state={state} docIds={selected} />
-          )}
-          {tab === "conflicts" && (
+          </div>
+          <div className={tab === "conflicts" ? "" : "hidden"}>
             <ConflictDetector
               state={state}
               docs={docs.filter((d) => selected.includes(d.doc_id))}
             />
-          )}
-          {tab === "theory" && (
+          </div>
+          <div className={tab === "theory" ? "" : "hidden"}>
             <CaseTheory state={state} docIds={selected} />
-          )}
+          </div>
         </section>
       </main>
     </div>
