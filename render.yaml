@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: condo-law-agent-api
+    runtime: docker
+    repo: https://github.com/mvalente27/Condo-Law-Agent
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: XAI_API_KEY
+        sync: false
+      - key: XAI_MODEL
+        value: grok-4-latest
+      - key: XAI_BASE_URL
+        value: https://api.x.ai/v1
+      - key: XAI_ZERO_DATA_RETENTION
+        value: "true"
+      - key: CORS_ORIGINS
+        value: https://mvalente27.github.io
+      - key: MAX_UPLOAD_MB
+        value: "50"
+      - key: OCR_ENABLED
+        value: "true"
