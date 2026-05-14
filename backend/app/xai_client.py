@@ -16,7 +16,7 @@ async def chat_completion(
     messages: list[dict[str, str]],
     *,
     temperature: float = 0.2,
-    max_tokens: int | None = 1500,
+    max_tokens: int | None = 4000,
     response_format: dict[str, Any] | None = None,
 ) -> str:
     settings = get_settings()

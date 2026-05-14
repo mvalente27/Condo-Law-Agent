@@ -249,12 +249,39 @@ async def conflict_detector(
                 {"role": "user", "content": user},
             ],
             temperature=0.0,
+            max_tokens=6000,
             response_format={"type": "json_object"},
         )
     except XAIError as e:
         raise HTTPException(502, str(e))
 
     findings = _parse_findings(raw)
+    if not findings and raw.strip():
+        # Retry once without JSON mode; some models are flaky in JSON mode.
+        try:
+            raw = await chat_completion(
+                [
+                    {"role": "system", "content": system},
+                    {
+                        "role": "user",
+                        "content": user
+                        + "\n\nReturn ONLY a JSON array. No prose, no code fences.",
+                    },
+                ],
+                temperature=0.0,
+                max_tokens=6000,
+            )
+            findings = _parse_findings(raw)
+        except XAIError:
+            pass
+    if not findings:
+        # Surface raw model output so the user/operator can see what happened
+        # instead of getting an empty list silently.
+        snippet = (raw or "").strip()[:500] or "<empty model response>"
+        raise HTTPException(
+            502,
+            f"Conflict scan returned no parseable findings. Model output: {snippet}",
+        )
     return [ConflictFinding(**f) for f in findings]
 
 
@@ -318,7 +345,12 @@ async def case_theory(req: CaseTheoryRequest) -> dict[str, str]:
                 {"role": "user", "content": user},
             ],
             temperature=0.1,
+            max_tokens=4000,
         )
     except XAIError as e:
         raise HTTPException(502, str(e))
+    if not raw or not raw.strip():
+        raise HTTPException(
+            502, "Case theory returned an empty response. Try again or shorten the matter summary."
+        )
     return {"theory": linkify(raw, state_v)}
