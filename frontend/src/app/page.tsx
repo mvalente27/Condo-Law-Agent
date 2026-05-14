@@ -99,6 +99,7 @@ export default function Page() {
             <ConflictDetector
               state={state}
               docs={docs.filter((d) => selected.includes(d.doc_id))}
+              onDocsStale={() => refresh().catch(() => undefined)}
             />
           </div>
           <div className={tab === "theory" ? "" : "hidden"}>

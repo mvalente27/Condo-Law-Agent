@@ -231,7 +231,11 @@ async def conflict_detector(
     state_v = _validate_state(state)
     idx = store.get(doc_id)
     if not idx:
-        raise HTTPException(404, "Unknown doc_id")
+        raise HTTPException(
+            404,
+            "Document not found on the server. The backend may have restarted "
+            "(free-tier instances reset on idle/redeploy). Please re-upload the file.",
+        )
 
     # Use targeted retrieval against red-flag language.
     probe = (

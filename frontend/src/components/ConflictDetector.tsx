@@ -6,9 +6,11 @@ import HelpHint from "./HelpHint";
 export default function ConflictDetector({
   state,
   docs,
+  onDocsStale,
 }: {
   state: StateCode | "";
   docs: DocumentSummary[];
+  onDocsStale?: () => void;
 }) {
   const [results, setResults] = useState<Record<string, ConflictFinding[]>>({});
   const [busy, setBusy] = useState<Set<string>>(new Set());
@@ -34,7 +36,16 @@ export default function ConflictDetector({
       const r = await api.conflicts(state, docId);
       setResults((prev) => ({ ...prev, [docId]: r }));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Scan failed");
+      const msg = e instanceof Error ? e.message : "Scan failed";
+      if (msg.startsWith("404")) {
+        setError(
+          "One or more documents are no longer on the server (the backend likely " +
+            "restarted). Refreshing the document list — please re-upload any missing files.",
+        );
+        onDocsStale?.();
+      } else {
+        setError(msg);
+      }
     } finally {
       setDocBusy(docId, false);
     }
